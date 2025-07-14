@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
-import jp.co.sss.lms.entity.TStudentAttendance;
 import jp.co.sss.lms.form.AttendanceForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
 import jp.co.sss.lms.util.Constants;
@@ -32,20 +31,6 @@ public class AttendanceController {
 	private LoginUserDto loginUserDto;
 
 	/**
-	 * 現在より過去に未入力がないかチェック
-	 * 
-	 * @param model
-	 * @return 勤怠管理画面
-	 */
-	@RequestMapping(path = "/detail")
-	public String check(Model model) {
-		TStudentAttendance countByBlank =
-		studentAttendanceService.CountByBlank(loginUserDto.getLmsUserId());
-		model.addAttribute("countByBlank",countByBlank);
-		return "attetndance/detail";
-	}
-	
-	/**
 	 * 勤怠管理画面 初期表示
 	 * 
 	 * @param lmsUserId
@@ -62,6 +47,10 @@ public class AttendanceController {
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
+		//未入力の件数を取得及び判定
+		boolean notEnterCount = studentAttendanceService.NotEnterCount(loginUserDto.getLmsUserId());
+		model.addAttribute("notEnterCount", notEnterCount);
+		System.out.println(notEnterCount);
 		return "attendance/detail";
 	}
 
