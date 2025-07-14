@@ -50,6 +50,12 @@ public interface TStudentAttendanceMapper {
 			@Param("lmsUserId") Integer lmsUserId, @Param("deleteFlg") Short deleteFlg);
 
 	/**
+	 * 勤怠情報未入力情報の取得
+	 */
+	Integer notEnterCount(@Param("lmsUserId") Integer lmsUserId,
+			@Param("trainingDate") Date trainingDate,@Param("deleteFlg") Short deleteFlg);
+	
+	/**
 	 * 勤怠情報（受講生入力）登録
 	 * 
 	 * @param tStudentAttendance
@@ -64,11 +70,5 @@ public interface TStudentAttendanceMapper {
 	 * @return 更新結果
 	 */
 	Boolean update(TStudentAttendance tStudentAttendance);
-	
-	/**
-	 * 勤怠情報未入力
-	 */
-	TStudentAttendance CountByBlank(@Param("lmsUserId") Integer lmsUserId,
-			@Param("trainingDate") Date trainingDate,@Param("deleteFlg") Short deleteFlg);
 
 }
