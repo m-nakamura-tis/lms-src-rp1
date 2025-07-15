@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-	th:replace="~{/common/layout :: layout(~{::title},~{::body/content()})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{/common/layout :: layout(~{::title},~{::body/content()})}">
+
 <head>
-<meta charset="UTF-8">
-<title>勤怠情報変更｜LMS</title>
-<!--<script th:src="@{/js/studentAttendance.js}" type="text/javascript"></script>-->
+	<meta charset="UTF-8">
+	<title>勤怠情報変更｜LMS</title>
 </head>
+
 <body>
 
 	<!-- 完了メッセージ -->
@@ -17,13 +17,13 @@
 			<span>[[${message}]]</span>
 		</div>
 	</th:block>
-	
+
+<!--	中村真那-Task.25-->
 	<!--勤怠未入力ダイアログ-->
 	<th:block th:if="${notEnterCount == true}">
-		<script>alert("過去日の勤怠に未入力があります。");
-			</script>
-			</th:block>
-	
+		<script th:src="@{/js/notentercount.js}" type="text/javascript"></script>
+	</th:block>
+
 	<h2>勤怠管理</h2>
 
 	<!-- エラーメッセージ -->
@@ -64,7 +64,8 @@
 				</thead>
 
 				<tbody class="db">
-					<th:block th:each="attendanceManagementDto : ${attendanceManagementDtoList}" th:object="${attendanceManagementDto}">
+					<th:block th:each="attendanceManagementDto : ${attendanceManagementDtoList}"
+						th:object="${attendanceManagementDto}">
 						<tr>
 							<td class="w160">[[*{#dates.format(trainingDate, 'yyyy年M月d日(E)')}]]</td>
 							<td class="w260">[[*{sectionName}]]</td>
@@ -81,14 +82,14 @@
 	</div>
 
 	<script type="text/javascript" th:inline="javascript">
-		$(function() {
+		$(function () {
 			$("#now").text('現在の時刻は　' + getClock() + '　です。');
-			setInterval(function() {
+			setInterval(function () {
 				$("#now").text('現在の時刻は　' + getClock() + '　です。');
 			}, 1000);
 		});
 		function getClock() {
-			const today =  new Date();
+			const today = new Date();
 			const hours = ('0' + today.getHours()).slice(-2);
 			const minutes = ('0' + today.getMinutes()).slice(-2);
 			return hours + ':' + minutes;
@@ -96,4 +97,5 @@
 	</script>
 
 </body>
+
 </html>
