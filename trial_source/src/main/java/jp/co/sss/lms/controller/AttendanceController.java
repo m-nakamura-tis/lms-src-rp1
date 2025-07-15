@@ -40,17 +40,17 @@ public class AttendanceController {
 	 * @throws ParseException
 	 */
 	@RequestMapping(path = "/detail", method = RequestMethod.GET)
-	public String index(Model model) {
+	public String index(Model model) throws ParseException {
 
 		// 勤怠一覧の取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
+		//中村真那-Task.25
 		//未入力の件数を取得及び判定
 		boolean notEnterCount = studentAttendanceService.NotEnterCount(loginUserDto.getLmsUserId());
 		model.addAttribute("notEnterCount", notEnterCount);
-		System.out.println(notEnterCount);
 		return "attendance/detail";
 	}
 
