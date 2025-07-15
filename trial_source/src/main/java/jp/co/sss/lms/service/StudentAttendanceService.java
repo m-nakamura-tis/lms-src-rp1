@@ -45,7 +45,7 @@ public class StudentAttendanceService {
 	@Autowired
 	private TStudentAttendanceMapper tStudentAttendanceMapper;
 
-	//中村真那-Task.25
+	//中村真那 -Task.25
 	/**
 	 * 過去日の未入力数の取得
 	 * @param lmsUserId
