@@ -1,6 +1,7 @@
 package jp.co.sss.lms.service;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,28 +44,30 @@ public class StudentAttendanceService {
 	private LoginUserDto loginUserDto;
 	@Autowired
 	private TStudentAttendanceMapper tStudentAttendanceMapper;
-	
-	
-	
+
+	//中村真那-Task.25
 	/**
 	 * 過去日の未入力数の取得
+	 * @param lmsUserId
+	 * @return Inetger(実数)
+	 * @throws ParseException 
 	 */
-	public boolean NotEnterCount(Integer lmsUserId) {
+	public boolean NotEnterCount(Integer lmsUserId) throws ParseException {
 		//本日の日付
-		Date trainingDate = new Date();
-		dateUtil.toString(trainingDate);
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		Date trainingDate = df.parse(df.format(new Date()));
 		//未入力日のカウント
 		Integer notEnterCount = tStudentAttendanceMapper
 				.notEnterCount(lmsUserId, trainingDate, Constants.DB_FLG_FALSE);
 		//判定
 		boolean check = false;
-		if(notEnterCount != null) {
+		if (notEnterCount >= 1) {
 			check = true;
 		}
 		return check;
-		
+
 	}
-	
+
 	/**
 	 * 勤怠一覧情報取得
 	 * 
@@ -93,7 +96,6 @@ public class StudentAttendanceService {
 
 		return attendanceManagementDtoList;
 	}
-
 
 	/**
 	 * 出退勤更新前のチェック
