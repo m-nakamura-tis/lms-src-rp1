@@ -109,10 +109,12 @@ public class AttendanceController {
 	 * 
 	 * @param model
 	 * @return 勤怠情報直接変更画面
+	 * @throws ParseException 
 	 */
 	@RequestMapping(path = "/update")
-	public String update(Model model) {
+	public String update(Model model) throws ParseException {
 
+		
 		// 勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
