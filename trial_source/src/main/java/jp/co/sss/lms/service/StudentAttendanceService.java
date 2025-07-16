@@ -233,9 +233,10 @@ public class StudentAttendanceService {
 	 * 
 	 * @param attendanceManagementDtoList
 	 * @return 勤怠編集フォーム
+	 * @throws ParseException 
 	 */
 	public AttendanceForm setAttendanceForm(
-			List<AttendanceManagementDto> attendanceManagementDtoList) {
+			List<AttendanceManagementDto> attendanceManagementDtoList) throws ParseException {
 
 		AttendanceForm attendanceForm = new AttendanceForm();
 		attendanceForm.setAttendanceList(new ArrayList<DailyAttendanceForm>());
@@ -243,7 +244,11 @@ public class StudentAttendanceService {
 		attendanceForm.setUserName(loginUserDto.getUserName());
 		attendanceForm.setLeaveFlg(loginUserDto.getLeaveFlg());
 		attendanceForm.setBlankTimes(attendanceUtil.setBlankTime());
-
+		//Task.26 1-3　中村真那
+		//時間と分のマップを取得
+		attendanceForm.setTrainingTimeHh(attendanceUtil.setTrainigTimeHh());
+		attendanceForm.setTrainingTimeMi(attendanceUtil.setTrainigTimeMi());
+		
 		// 途中退校している場合のみ設定
 		if (loginUserDto.getLeaveDate() != null) {
 			attendanceForm
@@ -262,6 +267,20 @@ public class StudentAttendanceService {
 			dailyAttendanceForm
 					.setTrainingStartTime(attendanceManagementDto.getTrainingStartTime());
 			dailyAttendanceForm.setTrainingEndTime(attendanceManagementDto.getTrainingEndTime());
+			//出勤時間が押されている場合のif　hh:mm形式のものをFormに入れ込む。
+//			//Task.26 1-3-2 中村真那
+//			//出勤時間（時）
+//			dailyAttendanceForm.setTrainingStartHour(attendanceUtil.setTrainingHour(
+//					attendanceManagementDto.getTrainingStartTime()));
+//			//出勤時間（分）
+//			dailyAttendanceForm.setTrainingStartTime(attendanceUtil.setTrainingMinute(
+//					attendanceManagementDto.getTrainingStartTime()));
+//			//退勤時間（時）
+//			dailyAttendanceForm.setTrainingEndHour(attendanceUtil.setTrainingHour(
+//					attendanceManagementDto.getTrainingEndTime()));
+//			//退勤時間（分）
+//			dailyAttendanceForm.setTrainigEndMinute(attendanceUtil.setTrainingMinute(
+//					attendanceManagementDto.getTrainingEndTime()));
 			if (attendanceManagementDto.getBlankTime() != null) {
 				dailyAttendanceForm.setBlankTime(attendanceManagementDto.getBlankTime());
 				dailyAttendanceForm.setBlankTimeValue(String.valueOf(
