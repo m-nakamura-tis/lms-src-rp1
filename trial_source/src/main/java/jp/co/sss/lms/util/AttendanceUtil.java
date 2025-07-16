@@ -1,6 +1,7 @@
 package jp.co.sss.lms.util;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 
@@ -85,6 +86,7 @@ public class AttendanceUtil {
 		TrainingTime total = new TrainingTime(hour, minute);
 		return total;
 	}
+	
 
 	/**
 	 * 時刻分を丸めた本日日付を取得
@@ -130,6 +132,61 @@ public class AttendanceUtil {
 
 		}
 		return map;
+	}
+	//Task.26　1－③ 中村真那
+	/**
+	 * 選択肢用の時間マップを取得
+	 * @param string 
+	 * 
+	 * @return 時間
+	 */
+	public LinkedHashMap<Integer, String> setTrainigTimeHh(){
+		LinkedHashMap<Integer, String> map = new LinkedHashMap<>();
+		map.put(null, "");
+		for(int i = 0; i < 24;) {
+			String time = String.valueOf(i);
+			map.put(i, time);
+		}
+		return map;
+	}
+	
+	/**
+	 * 選択肢用の分マップを取得
+	 * 
+	 * @return 分
+	 */
+	public LinkedHashMap<Integer,String> setTrainigTimeMi(){
+		LinkedHashMap<Integer,String> map = new LinkedHashMap<>();
+		map.put(null, "");
+		for(int i = 0; i < 60 ;) {
+			String time = String.valueOf(i);
+			map.put(i, time);
+		}
+		return map;
+	}
+	/**
+	 * 時間（時）の取得
+	 * @throws ParseException 
+	 */
+	public String setTrainingHour(String string) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("hh");
+		Date hour = sdf.parse(string);
+		String str = new SimpleDateFormat("hh").format(hour);
+//		String str = string.substring(0, 0)
+		return str;
+		
+	}
+
+	/**
+	 * 時間（分）の取得
+	 * @throws ParseException 
+	 */
+	public String setTrainingMinute(String string) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("mm");
+		Date minute = sdf.parse(string);
+		String str = new SimpleDateFormat("mm").format(minute);
+		return str;
+		
 	}
 
 	/**
