@@ -122,6 +122,7 @@ public class AttendanceController {
 		AttendanceForm attendanceForm = studentAttendanceService
 				.setAttendanceForm(attendanceManagementDtoList);
 		model.addAttribute("attendanceForm", attendanceForm);
+//		System.out.println(attendanceForm.getTrainingTimeHh());
 
 		return "attendance/update";
 	}
