@@ -178,22 +178,48 @@ public class AttendanceUtil {
 
 	/**
 	 * 時間（時）の取得
-	 * @throws ParseException 
+	 * 
+	 * @param string
+	 * @return HH
 	 */
 	public String getTrainingHour(String string){
 		String hour = string.substring(0, 2);
 		return hour;
 
 	}
+	
+	/**
+	 * 時間（時）の数値化
+	 * 
+	 * @param hour
+	 * @return Integer型のHH
+	 */
+	public Integer getIntegerHour(String string) {
+		Integer hour = Integer.parseInt(string);
+		return hour;
+	}
 
 	/**
 	 * 時間（分）の取得
-	 * @throws ParseException 
+	 * 
+	 * @param string
+	 * @return mm 
 	 */
 	public String getTrainingMinute(String string){
 		String minute = string.substring(3, 5);
 		return minute;
 
+	}
+	
+	/**
+	 * 時間（分）の数値化
+	 * 
+	 * @param minute
+	 * @return Integer型のmm
+	 */
+	public Integer getIntegerMinute(String string) {
+		Integer minute = Integer.parseInt(string);
+		return minute;
 	}
 
 	/**
