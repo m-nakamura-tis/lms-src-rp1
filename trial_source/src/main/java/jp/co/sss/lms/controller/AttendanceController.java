@@ -122,7 +122,6 @@ public class AttendanceController {
 		AttendanceForm attendanceForm = studentAttendanceService
 				.setAttendanceForm(attendanceManagementDtoList);
 		model.addAttribute("attendanceForm", attendanceForm);
-//		System.out.println(attendanceForm.getTrainingTimeHh());
 
 		return "attendance/update";
 	}
@@ -140,9 +139,14 @@ public class AttendanceController {
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
 			throws ParseException {
 
+		//更新前のチェック
+		String error = studentAttendanceService.punchCheck(Constants.CODE_VAL_LEAVING);
+		model.addAttribute("error", error);
 		// 更新
+		if(error == null) {
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);
+		}
 		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
