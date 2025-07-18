@@ -274,7 +274,6 @@ public class StudentAttendanceService {
 				//出勤時間（時）
 				dailyAttendanceForm.setTrainingStartHour(attendanceUtil.getTrainingHour(
 						attendanceManagementDto.getTrainingStartTime()));
-				System.out.println(dailyAttendanceForm.getTrainingStartHour());
 				//出勤時間（分）
 				dailyAttendanceForm.setTrainingStartMinute(attendanceUtil.getTrainingMinute(
 						attendanceManagementDto.getTrainingStartTime()));
@@ -368,8 +367,9 @@ public class StudentAttendanceService {
 				trainingStartTime = new TrainingTime(startHour, startMinute);
 				tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
 			} else {
-				tStudentAttendance.setTrainingStartTime(null);
+				tStudentAttendance.setTrainingStartTime("");
 			}
+			System.out.println(tStudentAttendance.getTrainingStartTime());
 
 			// 退勤時刻整形
 			TrainingTime trainingEndTime = null;
