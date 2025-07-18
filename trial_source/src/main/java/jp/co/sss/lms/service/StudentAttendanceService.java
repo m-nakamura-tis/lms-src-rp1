@@ -412,5 +412,51 @@ public class StudentAttendanceService {
 		// 完了メッセージ
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
 	}
+	
+	
+//	//更新入力チェック
+//	/**
+//	 * 直接入力画面更新チェック
+//	 * 
+//	 * @param attendanceType
+//	 * @return　エラーメッセージ
+//	 */
+//	@Autowired
+//	private MessageSource messageSource;
+//	public String updateCheck(AttendanceForm attendanceForm) {
+//		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
+//			//備考欄の文字数制限
+//			if(dailyAttendanceForm.getNote().length() >= 100) {
+//				String[] str = {messageSource.getMessage("placeNote",new String[]{},Locale.getDefault()),"100"};
+//				return messageUtil.getMessage(Constants.VALID_KEY_MAXLENGTH,str);
+//			}
+//			//時と分の一方のみ記入の場合
+//			if((dailyAttendanceForm.getTrainingStartHour() != null && dailyAttendanceForm.getTrainingStartMinute() == null) 
+//					||(dailyAttendanceForm.getTrainingStartHour() == null && dailyAttendanceForm.getTrainingStartMinute() != null)) {
+//				String[] str = {dailyAttendanceForm.getTrainingStartTime()};
+//				return messageUtil.getMessage(Constants.VALID_KEY_INVALID,str);
+//			}
+//			if((dailyAttendanceForm.getTrainingEndHour() != null && dailyAttendanceForm.getTrainingEndMinute() == null) 
+//					||(dailyAttendanceForm.getTrainingEndHour() == null && dailyAttendanceForm.getTrainingEndMinute() != null)) {
+//				String[] str = {dailyAttendanceForm.getTrainingEndTime()};
+//				return messageUtil.getMessage(Constants.VALID_KEY_INVALID,str);
+//			}
+//			//退勤時間のみ記入の場合
+//			if(dailyAttendanceForm.getTrainingStartTime() == null && dailyAttendanceForm.getTrainingEndTime() != null ) {
+//				return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHINEMPTY);
+//			}
+//			//退勤時間より出勤時間の方が多い場合（データ型の引き算でマイナスになるかで判定ができるかも？）
+//			if(dailyAttendanceForm.getTrainingStartHhValue() > dailyAttendanceForm.getTrainingEndHhValue()
+//					&& dailyAttendanceForm.getTrainingStartMmValue() > dailyAttendanceForm.getTrainingEndMmValue()) {
+//				Integer listN = attendanceForm.getAttendanceList().size();
+//				String[] list = {String.valueOf(listN)};
+//				return messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGE,list);
+//			}
+//			//データ型の引き算→中抜き時間との比較
+//			
+//		}
+//		return null;
+//	}
+
 
 }
