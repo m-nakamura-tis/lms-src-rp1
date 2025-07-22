@@ -11,6 +11,13 @@
 	<th:block th:if="${session.loginUserDto.role == '0001'}">
 		<h2>勤怠管理</h2>
 	</th:block>
+	
+	<!-- エラーメッセージ -->
+	<th:block th:if="${not #strings.isEmpty(updateError)}" id="error">
+		<ul class=".errorInput"  style="padding-left: 0; list-style: none;" th:each = "errors :${updateError}">
+			<li th:if="${errors != null}"><span th:text="'*' + '&nbsp' + ${errors}" class="help-inline error"></span></li>
+		</ul>
+	</th:block>
 
 	<th:block th:if="${session.loginUserDto.role != '0001'}">
 		<h2>勤怠管理 <small>( [[${attendanceForm.userName}]] )</small></h2>
@@ -62,8 +69,12 @@
 								<!--										th:value="${dailyAttendanceForm.trainingStartTime}" class="form-control" />-->
 								<!--勤務開始時刻の選択箇所-->
 								<td class="w80">
+<!--									<th:block th:if="${not #strings.isEmpty(updateError)}" id ="error">-->
+<!--										<div class="errorInput" th:classappend="${#fields.hasErrors('attendanceForm.trainingTimeHh')} ? 'has-error'">-->
+<!--											</div>-->
+<!--											</th:block> セレクト内の色付け方法についてアドバイスをもらう-->
 									<select th:name="|attendanceList[${stat.index}].trainingStartHour|"
-										class="form-control">
+										class="form-control" th:classappend="${#fields.hasErrors('attendanceForm.trainingTimeHh')} ? 'errorInput'">
 										<option th:each="startHh : ${attendanceForm.trainingTimeHh}"
 											th:value="${startHh.key}" th:inlne="text" class="form-control"
 											th:selected="${startHh.key == dailyAttendanceForm.trainingStartHhValue}">
