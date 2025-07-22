@@ -139,14 +139,17 @@ public class AttendanceController {
 	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
 			throws ParseException {
 
-		//更新前のチェック
-		String error = studentAttendanceService.punchCheck(Constants.CODE_VAL_LEAVING);
-		model.addAttribute("error", error);
-		// 更新
-		if(error == null) {
+//		//更新前のチェック
+//		String error = studentAttendanceService.updateCheck(attendanceForm);
+//		model.addAttribute("error", error);
+//		// 更新
+//		if(error == null) {
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);
-		}
+//		}else {
+//			model.addAttribute("attendanceManagementDtoList",attendanceForm);
+//			return "attendance/update";
+//		}
 		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
