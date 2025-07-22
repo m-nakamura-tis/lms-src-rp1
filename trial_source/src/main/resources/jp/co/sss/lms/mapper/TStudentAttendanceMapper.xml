@@ -62,9 +62,11 @@
 		AND delete_flg = #{deleteFlg}
 		AND status != 1
 		AND
-		(training_start_time = ''
-		OR
-		training_end_time = '')
+		(training_start_time = '' OR
+		training_end_time = '' OR
+		training_start_time IS NULL OR
+		training_end_time IS NULL)
+
 
 	</select>
 
