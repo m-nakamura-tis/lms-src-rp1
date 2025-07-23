@@ -48,8 +48,8 @@ public class AttendanceController {
 		model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
 
 		//中村真那-Task.25
-		//未入力の件数を取得及び判定
-		boolean notEnterCount = studentAttendanceService.NotEnterCount(loginUserDto.getLmsUserId());
+		//未入力の件数の有無を確認
+		boolean notEnterCount = studentAttendanceService.notEnterCount(loginUserDto.getLmsUserId());
 		model.addAttribute("notEnterCount", notEnterCount);
 		return "attendance/detail";
 	}
@@ -142,8 +142,10 @@ public class AttendanceController {
 		//更新前のチェック
 		String[] error = studentAttendanceService.updateCheck(attendanceForm);
 		model.addAttribute("updateError", error);
+		System.out.println(error[0]);
 		// 更新
-		if(error == null) {
+		if(error[0] == null && error[1] ==null && error[2] ==null && error[3] ==null
+				&& error[4] ==null && error[5] ==null) {
 			//もともとのソースコード部分
 		String message = studentAttendanceService.update(attendanceForm);
 		model.addAttribute("message", message);
