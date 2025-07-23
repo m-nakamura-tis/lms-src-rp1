@@ -11,11 +11,12 @@
 	<th:block th:if="${session.loginUserDto.role == '0001'}">
 		<h2>勤怠管理</h2>
 	</th:block>
-	
+
 	<!-- エラーメッセージ -->
 	<th:block th:if="${not #strings.isEmpty(updateError)}" id="error">
-		<ul class=".errorInput"  style="padding-left: 0; list-style: none;" th:each = "errors :${updateError}">
-			<li th:if="${errors != null}"><span th:text="'*' + '&nbsp' + ${errors}" class="help-inline error"></span></li>
+		<ul style="padding-left: 0; list-style: none;" th:each="errors :${updateError}">
+			<li th:if="${errors != null}"><span th:text="'*' + '&nbsp' + ${errors}" class="help-inline error"></span>
+			</li>
 		</ul>
 	</th:block>
 
@@ -29,7 +30,7 @@
 	<div class="row">
 		<div class="bs-component col-sm-12">
 
-			<form th:action="@{/attendance/update}" method="post">
+			<form th:action="@{/attendance/update}" method="post" name="update">
 				<table class="table table-hover dataTable no-footer">
 					<thead>
 						<tr>
@@ -64,22 +65,22 @@
 								<td class="w300">[[${dailyAttendanceForm.sectionName}]]</td>
 								<!--定時のボタン-->
 								<td class="w60"><input type="button" class="btn btn-success" value="定時" /></td>
-
-								<!--									<input type="text" th:name="|attendanceList[${stat.index}].trainingStartTime|"-->
-								<!--										th:value="${dailyAttendanceForm.trainingStartTime}" class="form-control" />-->
 								<!--勤務開始時刻の選択箇所-->
 								<td class="w80">
-<!--									<th:block th:if="${not #strings.isEmpty(updateError)}" id ="error">-->
-<!--										<div class="errorInput" th:classappend="${#fields.hasErrors('attendanceForm.trainingTimeHh')} ? 'has-error'">-->
-<!--											</div>-->
-<!--											</th:block> セレクト内の色付け方法についてアドバイスをもらう-->
+									<!--								<th:block th:if="${not #strings.isEmpty(updateError)}" id ="error">-->
+									<!--								<div class="errorInput" th:classappend="${not #strings.isEmpty(updateError)} ? 'has-error'">-->
+									<!--									</div>-->
+									<!--									</th:block> -->
+									<!--									<div class="form-control" th:if="${dailyAttendanceForm.errorList[1] != 0}"  th:attrappend="class=form-control errorInput "></div>-->
+								
 									<select th:name="|attendanceList[${stat.index}].trainingStartHour|"
-										class="form-control" th:classappend="${#fields.hasErrors('attendanceForm.trainingTimeHh')} ? 'errorInput'">
+										class="form-control">
 										<option th:each="startHh : ${attendanceForm.trainingTimeHh}"
 											th:value="${startHh.key}" th:inlne="text" class="form-control"
 											th:selected="${startHh.key == dailyAttendanceForm.trainingStartHhValue}">
 											[[${startHh.value}]]</option>
-									</select>
+							       </select>
+									
 								</td>
 								<td>：</td>
 								<td class="w80">
@@ -139,10 +140,18 @@
 					<th:block th:if="${session.loginUserDto.role != '0001'}">
 						<input type="submit" value="戻る" name="indexCompany" class="btn btn-default" />
 					</th:block>
-					<input type="submit" value="更新" name="complete" class="btn btn-info" />
+					<input type="submit" value="更新" name="complete" class="btn btn-info" onclick="Update();"/>
 				</div>
 
 			</form>
+			<script>
+				document.update.complete.addEventListener('click',function(event){
+					var result = window.confirm("更新します。よろしいですか？");
+					if(!result){
+						 event.preventDefault();
+					}
+				})
+				</script>
 		</div>
 	</div>
 
