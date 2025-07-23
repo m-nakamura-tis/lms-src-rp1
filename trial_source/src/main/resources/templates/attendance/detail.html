@@ -21,7 +21,7 @@
     <!--中村真那-Task.25-->
 	<!--勤怠未入力ダイアログ-->
 	<th:block th:if="${notEnterCount == true}">
-		<script th:src="@{/js/notentercount.js}" type="text/javascript"></script>
+		<script>alert("過去日の勤怠に未入力があります。");</script>
 	</th:block>
 
 	<h2>勤怠管理</h2>
