@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,6 +12,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
@@ -308,8 +311,6 @@ public class StudentAttendanceService {
 			dailyAttendanceForm.setDispTrainingDate(dateUtil
 					.dateToString(attendanceManagementDto.getTrainingDate(), "yyyy年M月d日(E)"));
 			dailyAttendanceForm.setStatusDispName(attendanceManagementDto.getStatusDispName());
-			Integer[] errorList = {0,0,0,0,0,0,0};
-			dailyAttendanceForm.setErrorList(errorList);
 
 			attendanceForm.getAttendanceList().add(dailyAttendanceForm);
 		}
@@ -363,8 +364,8 @@ public class StudentAttendanceService {
 						+ dailyAttendanceForm.getTrainingStartMinute());
 				trainingStartTime = new TrainingTime(dailyAttendanceForm.getTrainingStartTime());
 				tStudentAttendance.setTrainingStartTime(trainingStartTime.getFormattedString());
-			} else if(dailyAttendanceForm.getTrainingStartHour() == "" || 
-					dailyAttendanceForm.getTrainingStartMinute() == ""){
+			} else if (dailyAttendanceForm.getTrainingStartHour() == "" ||
+					dailyAttendanceForm.getTrainingStartMinute() == "") {
 				tStudentAttendance.setTrainingStartTime(null);
 			}
 
@@ -378,8 +379,8 @@ public class StudentAttendanceService {
 						+ dailyAttendanceForm.getTrainingEndMinute());
 				trainingEndTime = new TrainingTime(dailyAttendanceForm.getTrainingEndTime());
 				tStudentAttendance.setTrainingEndTime(trainingEndTime.getFormattedString());
-			} else if(dailyAttendanceForm.getTrainingEndHour() == "" || 
-					dailyAttendanceForm.getTrainingEndMinute() == ""){
+			} else if (dailyAttendanceForm.getTrainingEndHour() == "" ||
+					dailyAttendanceForm.getTrainingEndMinute() == "") {
 				tStudentAttendance.setTrainingEndTime(null);
 			}
 			// 中抜け時間
@@ -414,105 +415,137 @@ public class StudentAttendanceService {
 		// 完了メッセージ
 		return messageUtil.getMessage(Constants.PROP_KEY_ATTENDANCE_UPDATE_NOTICE);
 	}
-	
-	
-//	//更新入力チェック
-//	/**
-//	 * 直接入力画面更新チェック
-//	 * 
-//	 * @param attendanceType
-//	 * @return　エラーメッセージ
-//	 */
+
+	//	//更新入力チェック
+	//	/**
+	//	 * 直接入力画面更新チェック
+	//	 * 
+	//	 * @param attendanceType
+	//	 * @return　エラーメッセージ
+	//	 */
 	@Autowired
 	private MessageSource messageSource;
-	public String[] updateCheck(AttendanceForm attendanceForm) throws ParseException {
-		String[] error = new String[6];
-		Integer startHour = 0;
-		Integer startMinute = 0;
-		Integer endHour = 0;
-		Integer endMinute = 0;
+
+	//配列を使ってみるか。
+	public String updateCheck(AttendanceForm attendanceForm,BindingResult bindingResult) throws ParseException {
+		LinkedHashMap<Integer, String> errorList = new LinkedHashMap<>();
+		errorList.put(null, "");
+		//String[] errorList = new String[6];
+		Integer startHour = null;
+		Integer startMinute = null;
+		Integer endHour = null;
+		Integer endMinute = null;
 		//本日の日付
-				SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
-				Date trainingDate = df.parse(df.format(new Date()));
+		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+		Date trainingDate = df.parse(df.format(new Date()));
 		//メッセージをストリング配列に格納する？
 		//日付が今日よりも前の場合のif文も条件に入れる。
 		for (DailyAttendanceForm dailyAttendanceForm : attendanceForm.getAttendanceList()) {
-			Integer[] errorList = {0,0,0,0,0,0,0};
 			//フォーム内の日付
 			Date date = df.parse(dailyAttendanceForm.getTrainingDate());
-			if((date.compareTo(trainingDate)) == -1) {
-			if(dailyAttendanceForm.getTrainingStartHour() != null && 
-					dailyAttendanceForm.getTrainingStartHour() != ""){
-			startHour = Integer.parseInt(dailyAttendanceForm.getTrainingStartHour());
-			}
-			if(dailyAttendanceForm.getTrainingStartMinute() != null &&
-					dailyAttendanceForm.getTrainingStartMinute() != "") {
-			startMinute = Integer.parseInt(dailyAttendanceForm.getTrainingStartMinute());
-			}
-			if(dailyAttendanceForm.getTrainingEndHour() != null &&
-					dailyAttendanceForm.getTrainingEndHour()!= "") {
-			endHour = Integer.parseInt(dailyAttendanceForm.getTrainingEndHour());
-			}
-			if(dailyAttendanceForm.getTrainingEndMinute() != null &&
-					dailyAttendanceForm.getTrainingEndMinute()!= "") {
-			endMinute = Integer.parseInt(dailyAttendanceForm.getTrainingEndMinute());
-			}
-			//備考欄の文字数制限
-			if(dailyAttendanceForm.getNote().length() >= 100) {
-				String[] str = {messageSource.getMessage("placeNote",new String[]{},Locale.getDefault()),"100"};
-				error[0] = messageUtil.getMessage(Constants.VALID_KEY_MAXLENGTH,str);
-				errorList[0] = 1;
-				} 
-			//時と分の一方のみ記入の場合
-			if((startHour != 0 && startMinute == 0) 
-					&&(startHour == 0 && startMinute != 0)
-					&&(startHour == 0 && startMinute == 0)) {
-				String[] str = {"出勤時間"};
-				error[1] = messageUtil.getMessage(Constants.INPUT_INVALID,str);
-				errorList[1] = 1;
-			}else if(startHour != 0 && startMinute != 0) {
-				error[1] = null;
-				errorList[1] = 0;
-			}
-			if((endHour != 0 && endMinute == 0) 
-					&&(endHour == 0 && endMinute != 0)
-					&&(endHour == 0 && endMinute == 0)) {
-				String[] str = {"退勤時間"};
-				error[2] = messageUtil.getMessage(Constants.INPUT_INVALID,str);
-				errorList[2] = 1;
-			}else if (endHour != 0 && endMinute != 0) {
-				error[2] = null;
-				errorList[2] = 0;
-			}
-			//退勤時間のみ記入の場合
-			if((startHour==0 && startMinute==0) && (endHour != 0 && endMinute != 0)) {
-				error[3] = messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHINEMPTY);
-				errorList[3] = 1;
-			}
-			//退勤時間より出勤時間の方が多い場合
-			if((startHour - endHour) > 0
-					&& (startMinute - endMinute) > 0) {
-				Integer listN = attendanceForm.getAttendanceList().size();
-				String[] list = {String.valueOf(listN)};
-				error[4] = messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGE,list);
-				errorList[4] = 1;
-			}
-			//データ型の引き算→中抜き時間との比較方法
-//			時間‐時間、分‐分どちらも条件に。
-			int hour = (endHour - startHour)*60;
-			int minute = endMinute - startMinute;
-			int trainingMinute = hour + minute;
-			if(dailyAttendanceForm.getBlankTime() != null && trainingMinute < dailyAttendanceForm.getBlankTime()){
-				error[5] = messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_BLANKTIMEERROR);
-				errorList[5] = 1;
+			if ((date.compareTo(trainingDate)) == -1) {
+				if (dailyAttendanceForm.getTrainingStartHour() != null &&
+						dailyAttendanceForm.getTrainingStartHour() != "") {
+					startHour = Integer.parseInt(dailyAttendanceForm.getTrainingStartHour());
 				}
-			System.out.println(dailyAttendanceForm.getTrainingDate());
+				if (dailyAttendanceForm.getTrainingStartMinute() != null &&
+						dailyAttendanceForm.getTrainingStartMinute() != "") {
+					startMinute = Integer.parseInt(dailyAttendanceForm.getTrainingStartMinute());
+				}
+				if (dailyAttendanceForm.getTrainingEndHour() != null &&
+						dailyAttendanceForm.getTrainingEndHour() != "") {
+					endHour = Integer.parseInt(dailyAttendanceForm.getTrainingEndHour());
+				}
+				if (dailyAttendanceForm.getTrainingEndMinute() != null &&
+						dailyAttendanceForm.getTrainingEndMinute() != "") {
+					endMinute = Integer.parseInt(dailyAttendanceForm.getTrainingEndMinute());
+				}
+				//備考欄の文字数制限
+				if (dailyAttendanceForm.getNote().length() >= 100) {
+					String[] str = { messageSource.getMessage("placeNote", new String[] {}, Locale.getDefault()),
+							"100" };
+					String error = messageUtil.getMessage(Constants.VALID_KEY_MAXLENGTH, str);
+					errorList.put(0, error);
+					//errorList[0] = error;
+					FieldError fieldError = new FieldError(bindingResult.getObjectName(),"note",error);
+					bindingResult.addError(fieldError);
+					}
+				//時と分の一方のみ記入の場合
+				if (startHour == null) {
+					String[] str = { "出勤時間" };
+					String error = messageUtil.getMessage(Constants.INPUT_INVALID, str);
+					errorList.put(1, error);
+					FieldError fieldError = new FieldError(bindingResult.getObjectName(),"trainingStartHour",error);
+					bindingResult.addError(fieldError);
+				}
+				if (startMinute == null ) {
+					String[] str = { "出勤時間" };
+					String error = messageUtil.getMessage(Constants.INPUT_INVALID, str);
+					errorList.put(1, error);
+					FieldError fieldError = new FieldError(bindingResult.getObjectName(),"trainingStartMinute",error);
+					bindingResult.addError(fieldError);
+				}
+				if (endHour == null) {
+					String[] str = { "退勤時間" };
+					String error = messageUtil.getMessage(Constants.INPUT_INVALID, str);
+					errorList.put(2, error);
+					FieldError fieldError = new FieldError(bindingResult.getObjectName(),"trainingEndHour",error);
+					bindingResult.addError(fieldError);
+				}
+				if (endMinute == null) {
+					String[] str = { "退勤時間" };
+					String error = messageUtil.getMessage(Constants.INPUT_INVALID, str);
+					errorList.put(2, error);
+					FieldError fieldError = new FieldError(bindingResult.getObjectName(),"trainingEndMinute",error);
+					bindingResult.addError(fieldError);
+				}
+				//退勤時間のみ記入の場合
+				if (startHour == null && startMinute == null && endHour != null && endMinute != null) {
+					String error = messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_PUNCHINEMPTY);
+					errorList.put(3, error);
+					FieldError fieldError1 = new FieldError(bindingResult.getObjectName(),"trainingStartHour",error);
+					FieldError fieldError2 = new FieldError(bindingResult.getObjectName(),"trainingStartMinute",error);
+					bindingResult.addError(fieldError1);
+					bindingResult.addError(fieldError2);		}
+				//退勤時間より出勤時間の方が多い場合
+				if (startHour != null && startMinute != null &&
+						(startHour - endHour) > 0|| (startMinute - endMinute) > 0) {
+					Integer listN = attendanceForm.getAttendanceList().size();
+					String[] list = { String.valueOf(listN) };
+					String error = messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_TRAININGTIMERANGE, list);
+					errorList.put(4,error);
+					FieldError fieldError1 = new FieldError(bindingResult.getObjectName(),"trainingStartHour",error);
+					FieldError fieldError2 = new FieldError(bindingResult.getObjectName(),"trainingStartMinute",error);
+					FieldError fieldError3 = new FieldError(bindingResult.getObjectName(),"trainingEndHour",error);
+					FieldError fieldError4 = new FieldError(bindingResult.getObjectName(),"trainingEndMinute",error);
+					bindingResult.addError(fieldError1);
+					bindingResult.addError(fieldError2);
+					bindingResult.addError(fieldError3);
+					bindingResult.addError(fieldError4);
+				}
+				//データ型の引き算→中抜き時間との比較方法
+				//			時間‐時間、分‐分どちらも条件に。
+				int hour ;
+				int minute ;
+				int trainingMinute = 0;
+				if(startHour != null && startMinute != null && 
+						endHour != null && endMinute != null) {
+					hour = (endHour - startHour) * 60;
+					minute = endMinute - startMinute;
+					trainingMinute = hour + minute;
+				}
+				if (dailyAttendanceForm.getBlankTime() != null && trainingMinute < dailyAttendanceForm.getBlankTime()) {
+					String error = messageUtil.getMessage(Constants.VALID_KEY_ATTENDANCE_BLANKTIMEERROR);
+					errorList.put(5, error);
+					FieldError fieldError = new FieldError(bindingResult.getObjectName(),"blankTime",error);
+					bindingResult.addError(fieldError);
+				}
+				dailyAttendanceForm.setErrorList(errorList);
+				System.out.println(dailyAttendanceForm.getTrainingDate());
 			}
-			dailyAttendanceForm.setErrorList(errorList);
 
 		}
-		return error;
+		return null;
 	}
-
 
 }
