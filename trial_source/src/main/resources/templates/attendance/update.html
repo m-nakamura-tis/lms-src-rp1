@@ -13,7 +13,7 @@
 	</th:block>
 
 	<!-- エラーメッセージ -->
-	<th:block th:if="${not #strings.isEmpty(updateError)}" id="error">
+	<th:block th:if="${}" id="error">
 		<ul style="padding-left: 0; list-style: none;" th:each="errors :${updateError}">
 			<li th:if="${errors != null}"><span th:text="'*' + '&nbsp' + ${errors}" class="help-inline error"></span>
 			</li>
@@ -74,7 +74,7 @@
 									<!--									<div class="form-control" th:if="${dailyAttendanceForm.errorList[1] != 0}"  th:attrappend="class=form-control errorInput "></div>-->
 								
 									<select th:name="|attendanceList[${stat.index}].trainingStartHour|"
-										class="form-control">
+										class="form-control" th:errorclass="errorInput"  th:field="*{dailyAttendanceForm.trainingStartHour}"/>
 										<option th:each="startHh : ${attendanceForm.trainingTimeHh}"
 											th:value="${startHh.key}" th:inlne="text" class="form-control"
 											th:selected="${startHh.key == dailyAttendanceForm.trainingStartHhValue}">
