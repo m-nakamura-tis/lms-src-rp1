@@ -1,18 +1,22 @@
 package jp.co.sss.lms.controller;
 
 import java.text.ParseException;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import jakarta.validation.Valid;
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.form.AttendanceForm;
+import jp.co.sss.lms.form.DailyAttendanceForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
 import jp.co.sss.lms.util.Constants;
 
@@ -112,9 +116,8 @@ public class AttendanceController {
 	 * @throws ParseException 
 	 */
 	@RequestMapping(path = "/update")
-	public String update(Model model) throws ParseException {
+	public String update(@ModelAttribute DailyAttendanceForm dailyAttendanceForm,Model model) throws ParseException {
 
-		
 		// 勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
 				.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
@@ -136,26 +139,24 @@ public class AttendanceController {
 	 * @throws ParseException
 	 */
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
-	public String complete(AttendanceForm attendanceForm, Model model, BindingResult result)
+	public String complete(@Valid @ModelAttribute DailyAttendanceForm dailyAttendanceForm,  AttendanceForm attendanceForm, Model model, BindingResult result)
 			throws ParseException {
 
 		//更新前のチェック
-		String[] error = studentAttendanceService.updateCheck(attendanceForm);
-		model.addAttribute("updateError", error);
-		System.out.println(error[0]);
+		String error = studentAttendanceService.updateCheck(attendanceForm,result);
+		LinkedHashMap<Integer, String> errorList = dailyAttendanceForm.getErrorList();
+		Integer errorLength = ((CharSequence) errorList).length();
+		model.addAttribute("updateError", errorList);
+		model.addAttribute("errorCount",errorLength);
+		System.out.println(errorList.get(1));
 		// 更新
-		if(error[0] == null && error[1] ==null && error[2] ==null && error[3] ==null
-				&& error[4] ==null && error[5] ==null) {
-			//もともとのソースコード部分
-		String message = studentAttendanceService.update(attendanceForm);
-		model.addAttribute("message", message);
-		}else {
-			List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
-					.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
-			AttendanceForm attendance = studentAttendanceService
-					.setAttendanceForm(attendanceManagementDtoList);
-			model.addAttribute("attendanceForm", attendance);
+		if (result.hasErrors()) {
+			model.addAttribute("attendanceForm", attendanceForm);
 			return "attendance/update";
+		} else {
+			//もともとのソースコード部分
+			String message = studentAttendanceService.update(attendanceForm);
+			model.addAttribute("message", message);
 		}
 		// 一覧の再取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
