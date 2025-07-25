@@ -1,7 +1,5 @@
 package jp.co.sss.lms.form;
 
-import java.util.LinkedHashMap;
-
 import lombok.Data;
 
 /**
@@ -71,7 +69,5 @@ public class DailyAttendanceForm {
 	private String courseName;
 	/** インデックス */
 	private String index;
-	/**エラーメッセージ*/
-	private LinkedHashMap<Integer, String> errorList;
 
 }
