@@ -12,13 +12,13 @@
 		<h2>勤怠管理</h2>
 	</th:block>
 
-	<!-- エラーメッセージ -->
-	<th:block th:if="${}" id="error">
-		<ul style="padding-left: 0; list-style: none;" th:each="errors :${updateError}">
-			<li th:if="${errors != null}"><span th:text="'*' + '&nbsp' + ${errors}" class="help-inline error"></span>
-			</li>
-		</ul>
-	</th:block>
+<!--	 エラーメッセージ -->
+		<th:block th:if="${errorCount != 0}" id="error">
+			<ul style="padding-left: 0; list-style: none;" th:each="errors :${errorList}">
+				<li th:if="${errors != null}"><span th:text="'*' + '&nbsp' + ${errors}" class="help-inline error"></span>
+				</li>
+			</ul>
+		</th:block>
 
 	<th:block th:if="${session.loginUserDto.role != '0001'}">
 		<h2>勤怠管理 <small>( [[${attendanceForm.userName}]] )</small></h2>
@@ -67,25 +67,19 @@
 								<td class="w60"><input type="button" class="btn btn-success" value="定時" /></td>
 								<!--勤務開始時刻の選択箇所-->
 								<td class="w80">
-									<!--								<th:block th:if="${not #strings.isEmpty(updateError)}" id ="error">-->
-									<!--								<div class="errorInput" th:classappend="${not #strings.isEmpty(updateError)} ? 'has-error'">-->
-									<!--									</div>-->
-									<!--									</th:block> -->
-									<!--									<div class="form-control" th:if="${dailyAttendanceForm.errorList[1] != 0}"  th:attrappend="class=form-control errorInput "></div>-->
-								
-									<select th:name="|attendanceList[${stat.index}].trainingStartHour|"
-										class="form-control" th:errorclass="errorInput"  th:field="*{dailyAttendanceForm.trainingStartHour}"/>
+									<select th:name="|attendanceList[${stat.index}].trainingStartHour|" 
+									   th:class="${trainingStartHour[stat.index]} ? 'form-control errorInput':'form-control'">
+<!--										class="form-controll" th:errorclass="errorInput">-->
 										<option th:each="startHh : ${attendanceForm.trainingTimeHh}"
 											th:value="${startHh.key}" th:inlne="text" class="form-control"
 											th:selected="${startHh.key == dailyAttendanceForm.trainingStartHhValue}">
 											[[${startHh.value}]]</option>
-							       </select>
-									
+									</select>
 								</td>
 								<td>：</td>
 								<td class="w80">
 									<select th:name="|attendanceList[${stat.index}].trainingStartMinute|"
-										class="form-control">
+										class="form-control">	
 										<option th:each="startMi : ${attendanceForm.trainingTimeMi}"
 											th:value="${startMi.key}" th:inlne="text" class="form-control"
 											th:selected="${startMi.key == dailyAttendanceForm.trainingStartMmValue}">
@@ -98,7 +92,7 @@
 								プルダウン構築中-->
 								<td class="w80">
 									<select th:name="|attendanceList[${stat.index}].trainingEndHour|"
-										class="form-control">
+										class="form-control" >
 										<option th:each="endHh : ${attendanceForm.trainingTimeHh}"
 											th:value="${endHh.key}" th:inlne="text" class="form-control"
 											th:selected="${endHh.key == dailyAttendanceForm.trainingEndHhValue}">
@@ -108,7 +102,7 @@
 								<td>：</td>
 								<td class="w80">
 									<select th:name="|attendanceList[${stat.index}].trainingEndMinute|"
-										class="form-control">
+										class="form-control">　
 										<option th:each="endMi : ${attendanceForm.trainingTimeMi}"
 											th:value="${endMi.key}" th:inlne="text" class="form-control"
 											th:selected="${endMi.key == dailyAttendanceForm.trainingEndMmValue}">
@@ -126,7 +120,8 @@
 								<td class="w100">[[${dailyAttendanceForm.statusDispName}]]</td>
 								<td class="w240">
 									<input type="text" th:name="|attendanceList[${stat.index}].note|"
-										th:value="${dailyAttendanceForm.note}" class="form-control"></input>
+										th:value="${dailyAttendanceForm.note}" class="form-control">
+									</input>
 								</td>
 							</tr>
 						</th:block>
@@ -140,18 +135,18 @@
 					<th:block th:if="${session.loginUserDto.role != '0001'}">
 						<input type="submit" value="戻る" name="indexCompany" class="btn btn-default" />
 					</th:block>
-					<input type="submit" value="更新" name="complete" class="btn btn-info" onclick="Update();"/>
+					<input type="submit" value="更新" name="complete" class="btn btn-info" onclick="Update();" />
 				</div>
 
 			</form>
 			<script>
-				document.update.complete.addEventListener('click',function(event){
+				document.update.complete.addEventListener('click', function (event) {
 					var result = window.confirm("更新します。よろしいですか？");
-					if(!result){
-						 event.preventDefault();
+					if (!result) {
+						event.preventDefault();
 					}
 				})
-				</script>
+			</script>
 		</div>
 	</div>
 
