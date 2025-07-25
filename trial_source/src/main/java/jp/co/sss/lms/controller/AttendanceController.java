@@ -1,22 +1,18 @@
 package jp.co.sss.lms.controller;
 
 import java.text.ParseException;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import jakarta.validation.Valid;
 import jp.co.sss.lms.dto.AttendanceManagementDto;
 import jp.co.sss.lms.dto.LoginUserDto;
 import jp.co.sss.lms.form.AttendanceForm;
-import jp.co.sss.lms.form.DailyAttendanceForm;
 import jp.co.sss.lms.service.StudentAttendanceService;
 import jp.co.sss.lms.util.Constants;
 
@@ -116,7 +112,7 @@ public class AttendanceController {
 	 * @throws ParseException 
 	 */
 	@RequestMapping(path = "/update")
-	public String update(@ModelAttribute DailyAttendanceForm dailyAttendanceForm,Model model) throws ParseException {
+	public String update(Model model) throws ParseException {
 
 		// 勤怠管理リストの取得
 		List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
@@ -139,18 +135,34 @@ public class AttendanceController {
 	 * @throws ParseException
 	 */
 	@RequestMapping(path = "/update", params = "complete", method = RequestMethod.POST)
-	public String complete(@Valid @ModelAttribute DailyAttendanceForm dailyAttendanceForm,  AttendanceForm attendanceForm, Model model, BindingResult result)
+	public String complete(AttendanceForm attendanceForm ,BindingResult result ,Model model)
 			throws ParseException {
 
 		//更新前のチェック
-		String error = studentAttendanceService.updateCheck(attendanceForm,result);
-		LinkedHashMap<Integer, String> errorList = dailyAttendanceForm.getErrorList();
-		Integer errorLength = ((CharSequence) errorList).length();
-		model.addAttribute("updateError", errorList);
-		model.addAttribute("errorCount",errorLength);
-		System.out.println(errorList.get(1));
+		result = studentAttendanceService.updateCheck(attendanceForm,result);
+		if(attendanceForm.getErrorList() != null) {
+			model.addAttribute("errorList",attendanceForm.getErrorList());
+		}
+		System.out.println(result.getObjectName());
+		System.out.println(result.getErrorCount());
+		model.addAttribute("errorCount",result.getErrorCount());
+		model.addAttribute("note",attendanceForm.getNote());
+		model.addAttribute("trainingStartHour",attendanceForm.getTrainingStartHour());
+		model.addAttribute("trainingEndHour",attendanceForm.getTrainingEndHour());
+		model.addAttribute("trainingStartMinute",attendanceForm.getTrainingStartMinute());
+		model.addAttribute("trainingEndMinute",attendanceForm.getTrainingEndMinute());
+		model.addAttribute("blankTime",attendanceForm.getBlankTime());
 		// 更新
 		if (result.hasErrors()) {
+			
+			// 一覧の再取得
+			List<AttendanceManagementDto> attendanceManagementDtoList = studentAttendanceService
+					.getAttendanceManagement(loginUserDto.getCourseId(), loginUserDto.getLmsUserId());
+			model.addAttribute("attendanceManagementDtoList", attendanceManagementDtoList);
+			
+			//勤怠フォームの生成
+			attendanceForm = studentAttendanceService
+					.setAttendanceForm(attendanceManagementDtoList);
 			model.addAttribute("attendanceForm", attendanceForm);
 			return "attendance/update";
 		} else {
